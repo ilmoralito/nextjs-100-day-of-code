@@ -4,7 +4,7 @@ import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
 import { getShows } from "../lib/shows";
 
-export default function Home({ posts, links }) {
+export default function Home({ posts, links, shows }) {
   return (
     <Layout home>
       <Head>
@@ -39,28 +39,27 @@ export default function Home({ posts, links }) {
           ))}
         </ul>
       </section>
+      <section>
+        <h2>Batman shows</h2>
+        <ul>
+          {shows.map((show) => (
+            <li key={show}>{show}</li>
+          ))}
+        </ul>
+      </section>
     </Layout>
   );
 }
 
 export async function getStaticProps() {
   const posts = getSortedPostsData();
-  const shows = getShows();
-
-  shows.then((show) => console.log(show));
+  const shows = await getShows();
 
   return {
     props: {
-      posts,
-      links: ["link 1", "link 2", "link 3"],
+      posts, // sync data
+      shows, // async data
+      links: ["link 1", "link 2", "link 3"], // static data
     },
   };
 }
-
-// export async function getStaticProps() {
-//   return {
-//     props: {
-//       links: ["link 1", "link 2", "link 3"],
-//     },
-//   };
-// }

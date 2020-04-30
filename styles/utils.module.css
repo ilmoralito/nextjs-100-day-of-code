@@ -50,3 +50,20 @@
 .lightText {
   color: #666;
 }
+
+.group {
+  margin-bottom: 10px;
+}
+
+.control {
+  padding: 10px;
+  border: 1px solid steelblue;
+  border-radius: 4px;
+  width: 100%;
+  font-family: ubuntu;
+  font-size: 16px;
+}
+
+.label {
+  display: block;
+}

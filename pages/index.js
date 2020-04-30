@@ -3,6 +3,7 @@ import Layout, { siteTitle } from "../components/layout";
 import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
 import { getShows } from "../lib/shows";
+import { subscribe } from "../lib/subscribe";
 
 export default function Home({ posts, links, shows }) {
   return (
@@ -10,6 +11,9 @@ export default function Home({ posts, links, shows }) {
       <Head>
         <title>{siteTitle}</title>
       </Head>
+      <section>
+        <Form />
+      </section>
       <section className={utilStyles.headingMd}>
         <p>100 days code - day 0</p>
         <p>
@@ -49,6 +53,69 @@ export default function Home({ posts, links, shows }) {
       </section>
     </Layout>
   );
+}
+
+function Form() {
+  const [email, setEmail] = React.useState("");
+  const [message, setMessage] = React.useState("");
+
+  return (
+    <form
+      autoComplete="off"
+      onSubmit={(event) => {
+        event.preventDefault();
+
+        confirmSubscribe({ email, message });
+
+        setEmail("");
+        setMessage("");
+      }}
+    >
+      <div className={utilStyles.group}>
+        <label htmlFor="email" className={utilStyles.label}>
+          Email
+        </label>
+        <input
+          type="text"
+          name="email"
+          id="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          className={utilStyles.control}
+        />
+      </div>
+      <div className={utilStyles.group}>
+        <label htmlFor="message" className={utilStyles.label}>
+          Message
+        </label>
+        <textarea
+          name="message"
+          id="message"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          className={utilStyles.control}
+        ></textarea>
+      </div>
+      <div className={utilStyles.group}>
+        <button
+          type="submit"
+          disabled={
+            !email ||
+            !message ||
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
+          }
+        >
+          Send
+        </button>
+      </div>
+    </form>
+  );
+}
+
+async function confirmSubscribe({ email, message }) {
+  const data = await subscribe({ email, message });
+
+  console.log(data);
 }
 
 export async function getStaticProps() {

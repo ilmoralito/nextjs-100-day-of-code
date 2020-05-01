@@ -1,5 +1,3 @@
 export default (request, response) => {
-  console.log(request.body);
-
-  response.status(200).json({ hello: "world" });
+  response.status(200).json({ message: "Successfully subscribed" });
 };

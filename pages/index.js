@@ -58,64 +58,82 @@ export default function Home({ posts, links, shows }) {
 function Form() {
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [successMessage, setSuccessMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   return (
-    <form
-      autoComplete="off"
-      onSubmit={(event) => {
-        event.preventDefault();
+    <>
+      <form
+        autoComplete="off"
+        onSubmit={(event) => {
+          event.preventDefault();
 
-        confirmSubscribe({ email, message });
+          confirmSubscribe({ email, message })
+            .then((output) => {
+              setSuccessMessage(output.message);
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
 
-        setEmail("");
-        setMessage("");
-      }}
-    >
-      <div className={utilStyles.group}>
-        <label htmlFor="email" className={utilStyles.label}>
-          Email
-        </label>
-        <input
-          type="text"
-          name="email"
-          id="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          className={utilStyles.control}
-        />
-      </div>
-      <div className={utilStyles.group}>
-        <label htmlFor="message" className={utilStyles.label}>
-          Message
-        </label>
-        <textarea
-          name="message"
-          id="message"
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          className={utilStyles.control}
-        ></textarea>
-      </div>
-      <div className={utilStyles.group}>
-        <button
-          type="submit"
-          disabled={
-            !email ||
-            !message ||
-            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
-          }
-        >
-          Send
-        </button>
-      </div>
-    </form>
+          setEmail("");
+          setMessage("");
+        }}
+      >
+        <div className={utilStyles.group}>
+          <label htmlFor="email" className={utilStyles.label}>
+            Email
+          </label>
+          <input
+            type="text"
+            name="email"
+            id="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className={utilStyles.control}
+          />
+        </div>
+        <div className={utilStyles.group}>
+          <label htmlFor="message" className={utilStyles.label}>
+            Message
+          </label>
+          <textarea
+            name="message"
+            id="message"
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            className={utilStyles.control}
+          ></textarea>
+        </div>
+        <div className={utilStyles.group}>
+          <button
+            type="submit"
+            disabled={
+              !email ||
+              !message ||
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
+            }
+          >
+            Send
+          </button>
+        </div>
+      </form>
+      {successMessage && <SuccessMessage message={successMessage} />}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
+    </>
   );
 }
 
-async function confirmSubscribe({ email, message }) {
-  const data = await subscribe({ email, message });
+function SuccessMessage({ message }) {
+  return <div>{message}</div>;
+}
 
-  console.log(data);
+function ErrorMessage({ message }) {
+  return <div>{message}</div>;
+}
+
+async function confirmSubscribe({ email, message }) {
+  return await subscribe({ email, message });
 }
 
 export async function getStaticProps() {

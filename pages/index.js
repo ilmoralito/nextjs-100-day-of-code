@@ -4,8 +4,22 @@ import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
 import { getShows } from "../lib/shows";
 import { subscribe } from "../lib/subscribe";
+import useSWR from "swr";
+import fetch from "node-fetch";
+import Link from "next/link";
+
+async function fetcher(url) {
+  const response = await fetch(url);
+
+  return await response.json();
+}
 
 export default function Home({ posts, links, shows }) {
+  const { data, error } = useSWR("/api/people", fetcher);
+
+  if (error) return <div>Error fetching people's data</div>;
+  if (!data) return <div>Loading...</div>;
+
   return (
     <Layout home>
       <Head>
@@ -50,6 +64,9 @@ export default function Home({ posts, links, shows }) {
             <li key={show}>{show}</li>
           ))}
         </ul>
+      </section>
+      <section>
+        <People people={data} />
       </section>
     </Layout>
   );
@@ -130,6 +147,80 @@ function SuccessMessage({ message }) {
 
 function ErrorMessage({ message }) {
   return <div>{message}</div>;
+}
+
+function People({ people }) {
+  return (
+    <>
+      <table>
+        <caption>People</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Eye color</th>
+            <th>Hair color</th>
+            <th>Skin color</th>
+            <th>Height</th>
+            <th>Mass</th>
+          </tr>
+        </thead>
+        <tbody>
+          {people.map((person) => (
+            <Person key={person.id} {...person} />
+          ))}
+        </tbody>
+      </table>
+      <style jsx>{`
+        table {
+          border-collapse: collapse;
+          border: 1px solid gray;
+        }
+
+        th {
+          border: 1px solid gray;
+          text-align: left;
+          padding: 10px;
+        }
+      `}</style>
+    </>
+  );
+}
+
+function Person({
+  id,
+  name,
+  gender,
+  hair_color,
+  skin_color,
+  eye_color,
+  height,
+  mass,
+}) {
+  return (
+    <>
+      <tr>
+        <td>
+          <Link href="/people/[id]" as={`/people/${id}`}>
+            <a>{name}</a>
+          </Link>
+        </td>
+        <td>{gender}</td>
+        <td>{hair_color}</td>
+        <td>{eye_color}</td>
+        <td>{skin_color}</td>
+        <td>{height}</td>
+        <td>{mass}</td>
+      </tr>
+      <style jsx>{`
+        tr,
+        td {
+          padding: 10px;
+          border: 1px solid gray;
+        }
+      `}</style>
+    </>
+  );
 }
 
 async function confirmSubscribe({ email, message }) {

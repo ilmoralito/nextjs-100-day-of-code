@@ -61,7 +61,7 @@ export default function Home({ posts, links, shows }) {
         <h2>Batman shows</h2>
         <ul>
           {shows.map((show) => (
-            <li key={show}>{show}</li>
+            <li key={show.id}>{show.name}</li>
           ))}
         </ul>
       </section>

@@ -1,10 +1,12 @@
-// Add global CSS
+import ShowContext from "../components/showContext";
 import UserContext from "../components/userContext";
 import useRouter from "next/router";
 import "../styles/global.css";
 
 export default function App({ Component, pageProps }) {
   const [user, setUser] = React.useState(null);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchResults, setSearchResults] = React.useState([]);
 
   React.useEffect(() => {
     const user = localStorage.getItem("100daysofcode-user");
@@ -32,9 +34,21 @@ export default function App({ Component, pageProps }) {
     useRouter.push("/signin");
   }
 
+  function saveSearchTerm(searchTerm) {
+    setSearchTerm(searchTerm);
+  }
+
+  function saveSearchResults(searchResults) {
+    setSearchResults(searchResults);
+  }
+
   return (
     <UserContext.Provider value={{ user, signIn, signOut }}>
-      <Component {...pageProps} />
+      <ShowContext.Provider
+        value={{ searchTerm, searchResults, saveSearchTerm, saveSearchResults }}
+      >
+        <Component {...pageProps} />
+      </ShowContext.Provider>
     </UserContext.Provider>
   );
 }

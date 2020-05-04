@@ -2,15 +2,25 @@ import Head from "next/head";
 import Layout from "../../components/layout";
 import Link from "next/link";
 import { fetcher } from "../../lib/tvmaze";
+import ShowContext from "../../components/showContext";
 
 export default function Shows() {
-  const [shows, setShows] = React.useState([]);
+  const {
+    searchTerm,
+    searchResults,
+    saveSearchTerm,
+    saveSearchResults,
+  } = React.useContext(ShowContext);
+  const [shows, setShows] = React.useState(searchResults);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const onSubmitHanlder = async (searchTerm) => {
     setIsLoading(true);
 
     const data = await fetcher(searchTerm);
+
+    saveSearchTerm(searchTerm);
+    saveSearchResults(data);
 
     setIsLoading(false);
     setShows(data);
@@ -44,15 +54,15 @@ export default function Shows() {
         }
       `}</style>
       <Layout>
-        <Search onSubmit={onSubmitHanlder} />
+        <Search onSubmit={onSubmitHanlder} currentSearchTerm={searchTerm} />
         {isLoading ? <div>Loading...</div> : <SearchResults shows={shows} />}
       </Layout>
     </>
   );
 }
 
-function Search({ onSubmit }) {
-  const [searchTerm, setSearchTerm] = React.useState("");
+function Search({ onSubmit, currentSearchTerm }) {
+  const [searchTerm, setSearchTerm] = React.useState(currentSearchTerm);
 
   const onChangeHandler = (event) => setSearchTerm(event.target.value);
 

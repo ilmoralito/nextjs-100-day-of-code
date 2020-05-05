@@ -14,7 +14,7 @@ async function fetcher(url) {
   return await response.json();
 }
 
-export default function Home({ posts, links, shows }) {
+export default function Home({ posts, links, shows, title, description }) {
   const { data, error } = useSWR("/api/people", fetcher);
 
   if (error) return <div>Error fetching people's data</div>;
@@ -23,9 +23,10 @@ export default function Home({ posts, links, shows }) {
   return (
     <Layout home>
       <Head>
-        <title>{siteTitle}</title>
+        <title>{title}</title>
       </Head>
       <section>
+        <p style={{ textAlign: "center" }}>{description}</p>
         <Form />
       </section>
       <section className={utilStyles.headingMd}>
@@ -230,12 +231,15 @@ async function confirmSubscribe({ email, message }) {
 export async function getStaticProps() {
   const posts = getSortedPostsData();
   const shows = await getShows();
+  const siteConfiguration = await import("../site-configuration.json");
 
   return {
     props: {
-      posts, // sync data
-      shows, // async data
-      links: ["link 1", "link 2", "link 3"], // static data
+      posts,
+      shows,
+      links: ["link 1", "link 2", "link 3"],
+      title: siteConfiguration.default.title,
+      description: siteConfiguration.default.description,
     },
   };
 }
